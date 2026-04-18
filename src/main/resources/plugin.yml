@@ -1,0 +1,11 @@
+name: OceanMinerGrow
+version: '1.0.0-SNAPSHOT'
+main: com.github.Syaaddd.oceanMinerGrow.OceanMinerGrow
+api-version: '1.21'
+depend:
+  - Slimefun
+softdepend:
+  - GuizhanLibPlugin
+authors:
+  - Syaaddd
+description: Ocean mining machine addon for Slimefun4
