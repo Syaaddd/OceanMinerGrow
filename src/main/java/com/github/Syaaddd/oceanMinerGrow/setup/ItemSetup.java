@@ -69,7 +69,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk1,
-            24, 1000, 1, 1, 40).register(plugin);
+            500, 5000, 1, 1, 40).register(plugin);
 
         // Ocean Miner MK2 (1000 J/tick, 2 items/tick)
         // [Prismarine Brick] [Prismarine Brick]  [Prismarine Brick]
@@ -88,7 +88,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK2,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk2,
-            1000, 5000, 2, 2, 30).register(plugin);
+            2000, 20000, 2, 2, 30).register(plugin);
 
         // Ocean Miner MK3 (2500 J/tick, 3 items/tick)
         // [Tidestone Frag]  [Tidestone Frag]    [Tidestone Frag]
@@ -107,7 +107,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK3,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk3,
-            2500, 10000, 3, 3, 20).register(plugin);
+            8000, 80000, 3, 3, 20).register(plugin);
 
         // Ocean Miner MK4 (5000 J/tick, 5 items/tick)
         // [Abyssal Core]    [Abyssal Core]      [Abyssal Core]
@@ -126,6 +126,6 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK4,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk4,
-            5000, 20000, 5, 4, 15).register(plugin);
+            32000, 320000, 5, 4, 15).register(plugin);
     }
 }

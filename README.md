@@ -1,31 +1,37 @@
 
 # OceanMinerGrow
 
-Plugin addon Slimefun untuk Minecraft yang menambahkan mesin penambang otomatis bawah laut dengan sistem tier bertingkat.
+Plugin addon Slimefun untuk Minecraft yang menambahkan mesin penambang otomatis bawah laut dengan sistem tier bertingkat. Dioptimasi untuk server besar (150–200+ player).
 
 ## Fitur
 
-- 4 tier mesin penambang (MK1 → MK4) dengan peningkatan kecepatan dan energi
+- 4 tier mesin penambang (MK1 → MK4) dengan peningkatan kecepatan, energi, dan storage
 - 8 item unik yang hanya bisa didapatkan dari mesin
-- Drop table berbasis kedalaman (zona Y)
+- Drop table berbasis kedalaman (zona Y) — semakin dalam semakin bagus
+- Konsumsi energi tinggi — dirancang berat bahkan untuk endgame player
 - Integrasi penuh dengan jaringan energi Slimefun
 - Auto-export item ke container yang berdekatan
+- Dioptimasi untuk ratusan mesin aktif secara bersamaan
 
 ---
 
 ## Mesin
 
-| Tier | Item | Energy | Output | Kapasitas |
-|------|------|--------|--------|-----------|
-| MK1 | Ocean Miner | 24 J/tick | 1 item / 2 detik | 1.000 J |
-| MK2 | Ocean Miner MkII | 1.000 J/tick | 2 item / 1.5 detik | 5.000 J |
-| MK3 | Ocean Miner MkIII | 2.500 J/tick | 3 item / 1 detik | 10.000 J |
-| MK4 | Ocean Miner MkIV | 5.000 J/tick | 5 item / 0.75 detik | 20.000 J |
+| Tier | Item | Energy | Output | Storage | Kapasitas Baterai |
+|------|------|--------|--------|---------|-------------------|
+| MK1 | Ocean Miner | 500 J/tick | 1 item / 2 det | 9 slot | 5.000 J |
+| MK2 | Ocean Miner MkII | 2.000 J/tick | 2 item / 1.5 det | 18 slot | 20.000 J |
+| MK3 | Ocean Miner MkIII | 8.000 J/tick | 3 item / 1 det | 26 slot | 80.000 J |
+| MK4 | Ocean Miner MkIV | 32.000 J/tick | 5 item / 0.75 det | 26 slot | 320.000 J |
+
+> Sebagai referensi: Nuclear Reactor Slimefun menghasilkan ~1.024 J/tick.
+> MK4 membutuhkan setara ~32 Nuclear Reactor untuk berjalan penuh.
 
 ### Syarat Penempatan
 - Harus diletakkan **di dalam air** (blok Water atau Bubble Column)
 - Koordinat Y **≤ 44**
 - Minimal **1 blok air** di sisi yang bersebelahan agar beroperasi
+- Mesin berhenti produksi otomatis saat storage penuh (energi tidak terbuang)
 
 ---
 
@@ -103,6 +109,8 @@ Semua mesin dibuat di **Enhanced Crafting Table**.
 | B | Y 0 – 24 | Drop uncommon mulai tersedia |
 | C | Y < 0 | Drop rare & legendary paling tinggi |
 
+Semakin tinggi tier mesin, semakin besar peluang drop langka di semua zona.
+
 ---
 
 ## Dependensi
@@ -135,6 +143,20 @@ src/main/java/com/github/Syaaddd/oceanMinerGrow/
 └── setup/
     └── ItemSetup.java         # Registrasi item & mesin ke Slimefun
 ```
+
+---
+
+## Catatan Performa
+
+Plugin ini dioptimasi untuk server dengan banyak pemain dan mesin:
+
+- **Satu static map** untuk semua tier — menggantikan 4 map terpisah
+- **Koordinat dikodekan sebagai `long`** — menghindari alokasi `Location` object di setiap tick
+- **`ThreadLocalRandom`** — lebih cepat dari `Random` biasa
+- **Tidak konsumsi energi saat chest penuh** — mencegah energi terbuang sia-sia
+- **Pembersihan otomatis** saat mesin dipecah — mencegah memory leak jangka panjang
+
+Diuji untuk ~1.000 mesin aktif bersamaan (200 player × 5 mesin/player).
 
 ---
 

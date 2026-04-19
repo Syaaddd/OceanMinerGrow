@@ -14,7 +14,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Place underwater (Y < 45)",
         ChatColor.GRAY + "Automatically mines ocean materials",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "24 J/tick"
+        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "500 J/tick"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK2 = new SlimefunItemStack(
@@ -25,7 +25,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Place underwater (Y < 45)",
         ChatColor.GRAY + "Mines 2 materials per tick",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "1000 J/tick"
+        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "2.000 J/tick"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK3 = new SlimefunItemStack(
@@ -36,7 +36,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Place underwater (Y < 45)",
         ChatColor.GRAY + "Mines 3 materials per tick",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "2500 J/tick"
+        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "8.000 J/tick"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK4 = new SlimefunItemStack(
@@ -47,7 +47,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Place underwater (Y < 45)",
         ChatColor.GRAY + "Mines 5 materials per tick",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "5000 J/tick"
+        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "32.000 J/tick"
     );
 
     public static final SlimefunItemStack CORAL_DUST = new SlimefunItemStack(

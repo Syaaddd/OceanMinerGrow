@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
@@ -20,25 +21,36 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
     private static final int MAX_PLACE_Y = 44;
-    private static final int[] OUTPUT_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+    private static final int INFO_SLOT = 22;
+
+    /*
+     * Satu static map untuk semua tier — menghindari 4 map terpisah.
+     * Key: koordinat blok dikodekan jadi long (tanpa alokasi Location).
+     * Value: world tick berikutnya ketika mesin boleh produksi.
+     * Semua tick berjalan di main thread (isSynchronized=true) → tidak perlu sync.
+     */
+    private static final Map<Long, Long> NEXT_TICK_MAP = new HashMap<>(512);
 
     private final int energyConsumption;
     private final int energyCapacity;
     private final int itemsPerTick;
     private final int tier;
     private final int tickDelay;
-    private final Map<Location, Integer> tickCounters = new HashMap<>();
-    private final Random random = new Random();
+    private final int[] outputSlots;
 
     public OceanMiner(ItemGroup itemGroup, SlimefunItemStack item,
                       RecipeType recipeType, ItemStack[] recipe,
@@ -50,6 +62,31 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         this.itemsPerTick = itemsPerTick;
         this.tier = tier;
         this.tickDelay = tickDelay;
+        this.outputSlots = buildOutputSlots(tier);
+    }
+
+    // Encode koordinat blok ke long — menghindari alokasi Location di hot path
+    private static long blockKey(Block block) {
+        // X: 26 bit, Z: 26 bit, Y: 12 bit — cukup untuk semua koordinat Minecraft
+        return (((long)(block.getX() & 0x3FFFFFF)) << 38)
+             | (((long)(block.getZ() & 0x3FFFFFF)) << 12)
+             | ((long)(block.getY() & 0xFFF));
+    }
+
+    private static int[] buildOutputSlots(int tier) {
+        if (tier == 1) {
+            return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
+        } else if (tier == 2) {
+            return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+        } else {
+            // tier 3 & 4: semua slot kecuali INFO_SLOT
+            int[] slots = new int[26];
+            int idx = 0;
+            for (int i = 0; i < 27; i++) {
+                if (i != INFO_SLOT) slots[idx++] = i;
+            }
+            return slots;
+        }
     }
 
     @Override
@@ -68,7 +105,7 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
             @Override
             public int[] getSlotsAccessedByItemTransport(ItemTransportFlow flow) {
                 if (flow == ItemTransportFlow.INSERT) return new int[]{};
-                return OUTPUT_SLOTS;
+                return outputSlots;
             }
         };
 
@@ -87,7 +124,20 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
                         ChatColor.RED + "[OceanMinerGrow] " +
                         ChatColor.YELLOW + "Ocean Miner harus diletakkan di dalam air pada Y \u2264 44!"
                     );
+                    // Paksa client revert ghost block ke kondisi asli
+                    e.getPlayer().sendBlockChange(
+                        placed.getLocation(),
+                        e.getBlockReplacedState().getBlockData()
+                    );
                 }
+            }
+        });
+
+        // Bersihkan NEXT_TICK_MAP saat mesin dipecah — cegah memory leak
+        addItemHandler(new BlockBreakHandler(false, false) {
+            @Override
+            public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
+                NEXT_TICK_MAP.remove(blockKey(e.getBlock()));
             }
         });
 
@@ -106,8 +156,14 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
     private void constructMenu(BlockMenuPreset preset) {
         ItemStack background = new CustomItemStack(Material.GRAY_STAINED_GLASS_PANE, " ");
-        for (int i = 9; i < 27; i++) {
-            preset.addItem(i, background, (p, slot, item, action) -> false);
+
+        Set<Integer> outputSet = new HashSet<>();
+        for (int s : outputSlots) outputSet.add(s);
+
+        for (int i = 0; i < 27; i++) {
+            if (!outputSet.contains(i) && i != INFO_SLOT) {
+                preset.addItem(i, background, (p, slot, it, action) -> false);
+            }
         }
 
         String tierLabel;
@@ -126,38 +182,57 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         double cyclesPerSec = 20.0 / tickDelay;
         String rateStr = String.format("%.1f", itemsPerTick * cyclesPerSec) + " item/detik";
 
-        preset.addItem(22, new CustomItemStack(Material.PRISMARINE,
+        preset.addItem(INFO_SLOT, new CustomItemStack(Material.PRISMARINE,
             displayName,
             ChatColor.GRAY + "Mengumpulkan material laut...",
             "",
             ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + energyConsumption + " J/tick",
-            ChatColor.YELLOW + "Output: " + ChatColor.WHITE + itemsPerTick + " item / " + tickDelay + " tick (" + rateStr + ")"
-        ), (p, slot, item, action) -> false);
+            ChatColor.YELLOW + "Output: " + ChatColor.WHITE + itemsPerTick + " item / " + tickDelay + " tick (" + rateStr + ")",
+            ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + outputSlots.length + " slot"
+        ), (p, slot, it, action) -> false);
     }
 
     private void tick(Block block) {
-        BlockMenu menu = BlockStorage.getInventory(block.getLocation());
+        // Panggil getLocation() sekali saja — Location allocation mahal jika dipanggil ribuan kali/detik
+        Location loc = block.getLocation();
+
+        BlockMenu menu = BlockStorage.getInventory(loc);
         if (menu == null) return;
 
-        // Cooldown: produce only every tickDelay ticks
-        Location loc = block.getLocation();
-        int count = tickCounters.merge(loc, 1, Integer::sum);
-        if (count < tickDelay) return;
-        tickCounters.remove(loc);
+        // Cooldown via world tick time — tidak perlu increment counter tiap tick
+        long key = blockKey(block);
+        long now = block.getWorld().getFullTime();
+        Long scheduled = NEXT_TICK_MAP.get(key);
+        if (scheduled != null && now < scheduled) return;
+        NEXT_TICK_MAP.put(key, now + tickDelay);
 
         if (!hasAdjacentWater(block)) return;
+
+        // Cek slot dulu sebelum konsumsi energi — cegah energi terbuang saat chest penuh
+        if (!hasOutputSpace(menu)) return;
 
         int stored = getCharge(loc);
         if (stored < energyConsumption) return;
         removeCharge(loc, energyConsumption);
 
+        // ThreadLocalRandom lebih cepat dari Random instansi dan aman di main thread
+        ThreadLocalRandom rng = ThreadLocalRandom.current();
         int y = block.getY();
         for (int i = 0; i < itemsPerTick; i++) {
-            ItemStack drop = rollDrop(y, tier);
+            ItemStack drop = rollDrop(y, rng);
             if (drop != null) {
-                menu.pushItem(drop.clone(), OUTPUT_SLOTS);
+                menu.pushItem(drop, outputSlots);
             }
         }
+    }
+
+    private boolean hasOutputSpace(BlockMenu menu) {
+        for (int slot : outputSlots) {
+            ItemStack existing = menu.getItemInSlot(slot);
+            if (existing == null || existing.getType() == Material.AIR) return true;
+            if (existing.getAmount() < existing.getMaxStackSize()) return true;
+        }
+        return false;
     }
 
     private boolean hasAdjacentWater(Block block) {
@@ -172,8 +247,8 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         return false;
     }
 
-    private ItemStack rollDrop(int y, int tier) {
-        int roll = random.nextInt(100);
+    private ItemStack rollDrop(int y, ThreadLocalRandom rng) {
+        int roll = rng.nextInt(100);
 
         if (tier == 1) {
             if (y >= 25) {
