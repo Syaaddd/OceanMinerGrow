@@ -19,10 +19,10 @@ Plugin addon Slimefun untuk Minecraft yang menambahkan mesin penambang otomatis 
 
 | Tier | Item | Energy | Output | Storage | Kapasitas Baterai |
 |------|------|--------|--------|---------|-------------------|
-| MK1 | Ocean Miner | 500 J/tick | 1 item / 2 det | 9 slot | 5.000 J |
-| MK2 | Ocean Miner MkII | 2.000 J/tick | 2 item / 1.5 det | 18 slot | 20.000 J |
-| MK3 | Ocean Miner MkIII | 8.000 J/tick | 3 item / 1 det | 26 slot | 80.000 J |
-| MK4 | Ocean Miner MkIV | 32.000 J/tick | 5 item / 0.75 det | 26 slot | 320.000 J |
+| MK1 | Ocean Miner | 500 J/tick | 1 item / 2 det | 9 slot (1 baris) | 5.000 J |
+| MK2 | Ocean Miner MkII | 2.000 J/tick | 2 item / 1.5 det | 18 slot (2 baris) | 20.000 J |
+| MK3 | Ocean Miner MkIII | 8.000 J/tick | 3 item / 1 det | 36 slot (4 baris) | 80.000 J |
+| MK4 | Ocean Miner MkIV | 32.000 J/tick | 5 item / 0.75 det | 45 slot (5 baris) | 320.000 J |
 
 > Sebagai referensi: Nuclear Reactor Slimefun menghasilkan ~1.024 J/tick.
 > MK4 membutuhkan setara ~32 Nuclear Reactor untuk berjalan penuh.

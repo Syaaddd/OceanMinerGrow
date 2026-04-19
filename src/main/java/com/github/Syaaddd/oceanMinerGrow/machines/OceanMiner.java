@@ -35,7 +35,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
     private static final int MAX_PLACE_Y = 44;
-    private static final int INFO_SLOT = 22;
+    // Slot 49 = tengah baris ke-6 di inventory 54 slot (6 baris × 9 kolom)
+    private static final int INFO_SLOT = 49;
 
     /*
      * Satu static map untuk semua tier — menghindari 4 map terpisah.
@@ -74,19 +75,17 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
     }
 
     private static int[] buildOutputSlots(int tier) {
-        if (tier == 1) {
-            return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
-        } else if (tier == 2) {
-            return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
-        } else {
-            // tier 3 & 4: semua slot kecuali INFO_SLOT
-            int[] slots = new int[26];
-            int idx = 0;
-            for (int i = 0; i < 27; i++) {
-                if (i != INFO_SLOT) slots[idx++] = i;
-            }
-            return slots;
-        }
+        // Inventory 54 slot (6 baris). Baris 6 (slot 45-53) selalu dekorasi+info.
+        // Output hanya di baris 1-5 (slot 0-44), sesuai tier.
+        int count;
+        if (tier == 1)      count = 9;   // baris 1
+        else if (tier == 2) count = 18;  // baris 1-2
+        else if (tier == 3) count = 36;  // baris 1-4
+        else                count = 45;  // baris 1-5
+
+        int[] slots = new int[count];
+        for (int i = 0; i < count; i++) slots[i] = i;
+        return slots;
     }
 
     @Override
@@ -160,7 +159,8 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         Set<Integer> outputSet = new HashSet<>();
         for (int s : outputSlots) outputSet.add(s);
 
-        for (int i = 0; i < 27; i++) {
+        // Loop sampai slot 53 agar Slimefun tahu inventory butuh 54 slot (6 baris)
+        for (int i = 0; i < 54; i++) {
             if (!outputSet.contains(i) && i != INFO_SLOT) {
                 preset.addItem(i, background, (p, slot, it, action) -> false);
             }
