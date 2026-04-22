@@ -11,10 +11,12 @@ public final class OceanMinerItems {
         Material.PRISMARINE,
         ChatColor.AQUA + "Ocean Miner",
         "",
-        ChatColor.GRAY + "Place underwater (Y < 45)",
-        ChatColor.GRAY + "Automatically mines ocean materials",
+        ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
+        ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "500 J/tick"
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "500 J/tick",
+        ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "1 item / 40 tick " + ChatColor.GRAY + "(0.5 item/detik)",
+        ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "9 slot"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK2 = new SlimefunItemStack(
@@ -22,10 +24,12 @@ public final class OceanMinerItems {
         Material.PRISMARINE_BRICKS,
         ChatColor.AQUA + "Ocean Miner " + ChatColor.GREEN + "MkII",
         "",
-        ChatColor.GRAY + "Place underwater (Y < 45)",
-        ChatColor.GRAY + "Mines 2 materials per tick",
+        ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
+        ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "2.000 J/tick"
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "2.000 J/tick",
+        ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "2 item / 30 tick " + ChatColor.GRAY + "(1.3 item/detik)",
+        ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "18 slot"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK3 = new SlimefunItemStack(
@@ -33,10 +37,12 @@ public final class OceanMinerItems {
         Material.DARK_PRISMARINE,
         ChatColor.AQUA + "Ocean Miner " + ChatColor.GOLD + "MkIII",
         "",
-        ChatColor.GRAY + "Place underwater (Y < 45)",
-        ChatColor.GRAY + "Mines 3 materials per tick",
+        ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
+        ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "8.000 J/tick"
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "8.000 J/tick",
+        ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "3 item / 20 tick " + ChatColor.GRAY + "(3.0 item/detik)",
+        ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "36 slot"
     );
 
     public static final SlimefunItemStack OCEAN_MINER_MK4 = new SlimefunItemStack(
@@ -44,10 +50,12 @@ public final class OceanMinerItems {
         Material.CRYING_OBSIDIAN,
         ChatColor.AQUA + "Ocean Miner " + ChatColor.LIGHT_PURPLE + "MkIV",
         "",
-        ChatColor.GRAY + "Place underwater (Y < 45)",
-        ChatColor.GRAY + "Mines 5 materials per tick",
+        ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
+        ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + "32.000 J/tick"
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "32.000 J/tick",
+        ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "5 item / 15 tick " + ChatColor.GRAY + "(6.7 item/detik)",
+        ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "45 slot"
     );
 
     public static final SlimefunItemStack CORAL_DUST = new SlimefunItemStack(

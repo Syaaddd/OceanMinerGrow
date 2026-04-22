@@ -11,6 +11,7 @@ Plugin addon Slimefun untuk Minecraft yang menambahkan mesin penambang otomatis 
 - Konsumsi energi tinggi — dirancang berat bahkan untuk endgame player
 - Integrasi penuh dengan jaringan energi Slimefun
 - Auto-export item ke container yang berdekatan
+- Informasi drop ditampilkan langsung di Slimefun Guide (buku resep)
 - Dioptimasi untuk ratusan mesin aktif secara bersamaan
 
 ---
@@ -72,32 +73,32 @@ Semua mesin dibuat di **Enhanced Crafting Table**.
 ## Item Drop
 
 ### Common
-| Item | Deskripsi |
-|------|-----------|
-| Coral Dust | Serbuk halus dari koral kuno |
-| Pearlstone | Batu dengan kilau mutiara |
+| Item | Tersedia di | Zona Y |
+|------|-------------|--------|
+| Coral Dust | MK1, MK2, MK3, MK4 | Y ≤ 44 |
+| Pearlstone | MK1, MK2, MK3, MK4 | Y ≤ 44 |
 
 ### Uncommon
-| Item | Deskripsi |
-|------|-----------|
-| Abyssite | Kristal dari kedalaman jurang |
-| Tridentite Shard | Pecahan senjata laut kuno |
+| Item | Tersedia di | Zona Y |
+|------|-------------|--------|
+| Abyssite | MK1, MK2, MK3, MK4 | Y ≤ 24 |
+| Tridentite Shard | MK1, MK2, MK3, MK4 | Y ≤ 24 |
 
 ### Rare
-| Item | Tersedia di | Deskripsi |
-|------|-------------|-----------|
-| Pressure Gem | MK1+ (Y < 0) | Terkristalisasi oleh tekanan samudra |
-| Tidestone Fragment | MK2+ | Resonansi energi pasang surut |
+| Item | Tersedia di | Zona Y |
+|------|-------------|--------|
+| Pressure Gem | MK1, MK2, MK3, MK4 | Y < 0 |
+| Tidestone Fragment | MK2, MK3, MK4 | Y ≤ 44 |
 
 ### Epic
-| Item | Tersedia di | Deskripsi |
-|------|-------------|-----------|
-| Abyssal Core | MK3+ | Inti berdenyut dari jurang terdalam |
+| Item | Tersedia di | Zona Y |
+|------|-------------|--------|
+| Abyssal Core | MK3, MK4 | Y ≤ 24 |
 
 ### Legendary
-| Item | Tersedia di | Deskripsi |
-|------|-------------|-----------|
-| Void Crystal | MK4 saja | Kristal lahir dari kekosongan bawah samudra |
+| Item | Tersedia di | Zona Y |
+|------|-------------|--------|
+| Void Crystal | MK4 saja | Y ≤ 44 |
 
 ---
 
@@ -110,6 +111,25 @@ Semua mesin dibuat di **Enhanced Crafting Table**.
 | C | Y < 0 | Drop rare & legendary paling tinggi |
 
 Semakin tinggi tier mesin, semakin besar peluang drop langka di semua zona.
+
+---
+
+## Slimefun Guide (Buku Resep)
+
+### Tampilan Mesin
+Saat membuka halaman mesin di Slimefun Guide, pemain dapat melihat:
+1. **Resep craft** — bahan yang dibutuhkan di Enhanced Crafting Table
+2. **Daftar drop** — semua item yang bisa dihasilkan mesin tersebut (ditampilkan via custom RecipeType `ocean_miner_drop`)
+
+### Tampilan Material Drop
+Saat membuka halaman item drop (misal Coral Dust), pemain dapat melihat mesin-mesin yang menghasilkannya:
+
+| Item | Mesin yang Ditampilkan |
+|------|------------------------|
+| Coral Dust, Pearlstone, Abyssite, Tridentite Shard, Pressure Gem | MK1 · MK2 · MK3 · MK4 |
+| Tidestone Fragment | MK2 · MK3 · MK4 |
+| Abyssal Core | MK3 · MK4 |
+| Void Crystal | MK4 saja |
 
 ---
 
@@ -141,7 +161,7 @@ src/main/java/com/github/Syaaddd/oceanMinerGrow/
 ├── machines/
 │   └── OceanMiner.java        # Logika mesin (ticker, drop, energi)
 └── setup/
-    └── ItemSetup.java         # Registrasi item & mesin ke Slimefun
+    └── ItemSetup.java         # Registrasi item, mesin, dan custom RecipeType
 ```
 
 ---

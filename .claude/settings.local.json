@@ -6,7 +6,15 @@
       "Bash(mvn package *)",
       "Bash(./mvnw package *)",
       "Read(//c/Program Files/**)",
-      "Read(//c/Users/SMA N 4 Tegal/AppData/Local/Programs/**)"
+      "Read(//c/Users/SMA N 4 Tegal/AppData/Local/Programs/**)",
+      "Bash(mvn compile *)",
+      "Bash(./mvnw compile *)",
+      "Bash(cmd /c \"cd /d \\\\\"C:\\\\Users\\\\SMA N 4 Tegal\\\\Downloads\\\\Arsyad\\\\PlNewSyaddd\\\\Slimefun\\\\OceanMinerGrow\\\\\" && mvn compile -q 2>&1\")",
+      "Bash(cmd *)",
+      "Bash(powershell *)",
+      "Bash(where mvn *)",
+      "Read(//c/Users/SMA N 4 Tegal/**)",
+      "PowerShell(Get-Command *)"
     ]
   }
 }

@@ -7,7 +7,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
@@ -21,13 +20,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,8 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
     private static final int MAX_PLACE_Y = 44;
-    // Slot 49 = tengah baris ke-6 di inventory 54 slot (6 baris × 9 kolom)
-    private static final int INFO_SLOT = 49;
 
     /*
      * Satu static map untuk semua tier — menghindari 4 map terpisah.
@@ -132,13 +127,6 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
             }
         });
 
-        // Bersihkan NEXT_TICK_MAP saat mesin dipecah — cegah memory leak
-        addItemHandler(new BlockBreakHandler(false, false) {
-            @Override
-            public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
-                NEXT_TICK_MAP.remove(blockKey(e.getBlock()));
-            }
-        });
 
         addItemHandler(new BlockTicker() {
             @Override
@@ -159,63 +147,36 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         Set<Integer> outputSet = new HashSet<>();
         for (int s : outputSlots) outputSet.add(s);
 
-        // Loop sampai slot 53 agar Slimefun tahu inventory butuh 54 slot (6 baris)
         for (int i = 0; i < 54; i++) {
-            if (!outputSet.contains(i) && i != INFO_SLOT) {
+            if (!outputSet.contains(i)) {
                 preset.addItem(i, background, (p, slot, it, action) -> false);
             }
         }
-
-        String tierLabel;
-        ChatColor tierColor;
-        switch (tier) {
-            case 2: tierLabel = "MkII";  tierColor = ChatColor.GREEN;        break;
-            case 3: tierLabel = "MkIII"; tierColor = ChatColor.GOLD;         break;
-            case 4: tierLabel = "MkIV";  tierColor = ChatColor.LIGHT_PURPLE; break;
-            default: tierLabel = null;   tierColor = ChatColor.AQUA;         break;
-        }
-
-        String displayName = tierLabel == null
-            ? ChatColor.AQUA + "Ocean Miner"
-            : ChatColor.AQUA + "Ocean Miner " + tierColor + tierLabel;
-
-        double cyclesPerSec = 20.0 / tickDelay;
-        String rateStr = String.format("%.1f", itemsPerTick * cyclesPerSec) + " item/detik";
-
-        preset.addItem(INFO_SLOT, new CustomItemStack(Material.PRISMARINE,
-            displayName,
-            ChatColor.GRAY + "Mengumpulkan material laut...",
-            "",
-            ChatColor.YELLOW + "Energy: " + ChatColor.WHITE + energyConsumption + " J/tick",
-            ChatColor.YELLOW + "Output: " + ChatColor.WHITE + itemsPerTick + " item / " + tickDelay + " tick (" + rateStr + ")",
-            ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + outputSlots.length + " slot"
-        ), (p, slot, it, action) -> false);
     }
 
     private void tick(Block block) {
-        // Panggil getLocation() sekali saja — Location allocation mahal jika dipanggil ribuan kali/detik
         Location loc = block.getLocation();
 
         BlockMenu menu = BlockStorage.getInventory(loc);
         if (menu == null) return;
 
-        // Cooldown via world tick time — tidak perlu increment counter tiap tick
         long key = blockKey(block);
         long now = block.getWorld().getFullTime();
         Long scheduled = NEXT_TICK_MAP.get(key);
         if (scheduled != null && now < scheduled) return;
-        NEXT_TICK_MAP.put(key, now + tickDelay);
 
+        // Semua kondisi dicek SEBELUM set cooldown — mesin retry tiap Slimefun tick
+        // jika energi/slot/air belum tersedia, bukan menunggu satu siklus penuh lagi.
         if (!hasAdjacentWater(block)) return;
-
-        // Cek slot dulu sebelum konsumsi energi — cegah energi terbuang saat chest penuh
         if (!hasOutputSpace(menu)) return;
 
         int stored = getCharge(loc);
         if (stored < energyConsumption) return;
         removeCharge(loc, energyConsumption);
 
-        // ThreadLocalRandom lebih cepat dari Random instansi dan aman di main thread
+        // Cooldown dimulai hanya setelah berhasil produksi
+        NEXT_TICK_MAP.put(key, now + tickDelay);
+
         ThreadLocalRandom rng = ThreadLocalRandom.current();
         int y = block.getY();
         for (int i = 0; i < itemsPerTick; i++) {
