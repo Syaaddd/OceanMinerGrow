@@ -152,6 +152,41 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
                 preset.addItem(i, background, (p, slot, it, action) -> false);
             }
         }
+
+        // Baris terakhir (slot 45-53): label + tampilan item yang bisa dihasilkan
+        preset.addItem(45,
+            new CustomItemStack(Material.BOOK, ChatColor.YELLOW + "Possible Drops:"),
+            (p, slot, it, action) -> false);
+
+        ItemStack[] drops = getPossibleDrops(tier);
+        for (int i = 0; i < drops.length && i < 8; i++) {
+            preset.addItem(46 + i, drops[i], (p, slot, it, action) -> false);
+        }
+    }
+
+    private static ItemStack[] getPossibleDrops(int tier) {
+        if (tier == 1) return new ItemStack[]{
+            OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
+            OceanMinerItems.ABYSSITE, OceanMinerItems.TRIDENTITE_SHARD,
+            OceanMinerItems.PRESSURE_GEM
+        };
+        if (tier == 2) return new ItemStack[]{
+            OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
+            OceanMinerItems.ABYSSITE, OceanMinerItems.TRIDENTITE_SHARD,
+            OceanMinerItems.TIDESTONE_FRAGMENT, OceanMinerItems.PRESSURE_GEM
+        };
+        if (tier == 3) return new ItemStack[]{
+            OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
+            OceanMinerItems.ABYSSITE, OceanMinerItems.TRIDENTITE_SHARD,
+            OceanMinerItems.TIDESTONE_FRAGMENT, OceanMinerItems.PRESSURE_GEM,
+            OceanMinerItems.ABYSSAL_CORE
+        };
+        return new ItemStack[]{
+            OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
+            OceanMinerItems.ABYSSITE, OceanMinerItems.TRIDENTITE_SHARD,
+            OceanMinerItems.TIDESTONE_FRAGMENT, OceanMinerItems.PRESSURE_GEM,
+            OceanMinerItems.ABYSSAL_CORE, OceanMinerItems.VOID_CRYSTAL
+        };
     }
 
     private void tick(Block block) {

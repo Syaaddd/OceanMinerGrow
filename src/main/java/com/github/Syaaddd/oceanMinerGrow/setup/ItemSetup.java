@@ -100,55 +100,31 @@ public class ItemSetup {
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk4,
             32000, 320000, 5, 4, 15).register(plugin);
 
-        // ── Output materials – recipe menampilkan mesin yang menghasilkannya ───
-        // Layout 4-mesin: [MK1][ ][MK2] / [MK3][ ][MK4]   → slots 0,2,3,5
-        // Layout 3-mesin: [MK2][ ][MK3] / [MK4][ ][ ]     → slots 0,2,3
-        // Layout 2-mesin: [MK3][ ][MK4]                    → slots 0,2
-        // Layout 1-mesin: [ ][ ][ ] / [ ][MK4][ ]          → slot 4 (center)
-
-        ItemStack[] fromAllTiers = {
-            OceanMinerItems.OCEAN_MINER,     null, OceanMinerItems.OCEAN_MINER_MK2,
-            OceanMinerItems.OCEAN_MINER_MK3, null, OceanMinerItems.OCEAN_MINER_MK4,
-            null, null, null
-        };
+        // ── Output materials – bagian material dikosongkan ───────────────────
+        ItemStack[] emptyRecipe = new ItemStack[9];
 
         new SlimefunItem(group, OceanMinerItems.CORAL_DUST,
-            oceanMinerDrop, fromAllTiers.clone()).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
         new SlimefunItem(group, OceanMinerItems.PEARLSTONE,
-            oceanMinerDrop, fromAllTiers.clone()).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
         new SlimefunItem(group, OceanMinerItems.ABYSSITE,
-            oceanMinerDrop, fromAllTiers.clone()).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
         new SlimefunItem(group, OceanMinerItems.TRIDENTITE_SHARD,
-            oceanMinerDrop, fromAllTiers.clone()).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
         new SlimefunItem(group, OceanMinerItems.PRESSURE_GEM,
-            oceanMinerDrop, fromAllTiers.clone()).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
-        // TidestoneFragment: MK2, MK3, MK4
         new SlimefunItem(group, OceanMinerItems.TIDESTONE_FRAGMENT,
-            oceanMinerDrop, new ItemStack[]{
-                OceanMinerItems.OCEAN_MINER_MK2, null, OceanMinerItems.OCEAN_MINER_MK3,
-                OceanMinerItems.OCEAN_MINER_MK4, null, null,
-                null, null, null
-            }).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
-        // AbyssalCore: MK3, MK4
         new SlimefunItem(group, OceanMinerItems.ABYSSAL_CORE,
-            oceanMinerDrop, new ItemStack[]{
-                OceanMinerItems.OCEAN_MINER_MK3, null, OceanMinerItems.OCEAN_MINER_MK4,
-                null, null, null,
-                null, null, null
-            }).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
 
-        // VoidCrystal: MK4 saja
         new SlimefunItem(group, OceanMinerItems.VOID_CRYSTAL,
-            oceanMinerDrop, new ItemStack[]{
-                null, null, null,
-                null, OceanMinerItems.OCEAN_MINER_MK4, null,
-                null, null, null
-            }).register(plugin);
+            oceanMinerDrop, emptyRecipe.clone()).register(plugin);
     }
 }
