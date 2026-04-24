@@ -195,21 +195,23 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         BlockMenu menu = BlockStorage.getInventory(loc);
         if (menu == null) return;
 
+        if (!hasAdjacentWater(block)) return;
+
+        // Konsumsi energi setiap Slimefun tick agar sesuai deskripsi "J/tick".
+        // Jika energi tidak cukup, mesin berhenti total hingga diisi ulang.
+        int stored = getCharge(loc);
+        if (stored < energyConsumption) return;
+        removeCharge(loc, energyConsumption);
+
+        // Produksi dibatasi oleh cooldown game-tick — energi tetap terkonsumsi
+        // selama menunggu, yang merupakan perilaku yang diharapkan untuk CONSUMER.
         long key = blockKey(block);
         long now = block.getWorld().getFullTime();
         Long scheduled = NEXT_TICK_MAP.get(key);
         if (scheduled != null && now < scheduled) return;
 
-        // Semua kondisi dicek SEBELUM set cooldown — mesin retry tiap Slimefun tick
-        // jika energi/slot/air belum tersedia, bukan menunggu satu siklus penuh lagi.
-        if (!hasAdjacentWater(block)) return;
         if (!hasOutputSpace(menu)) return;
 
-        int stored = getCharge(loc);
-        if (stored < energyConsumption) return;
-        removeCharge(loc, energyConsumption);
-
-        // Cooldown dimulai hanya setelah berhasil produksi
         NEXT_TICK_MAP.put(key, now + tickDelay);
 
         ThreadLocalRandom rng = ThreadLocalRandom.current();
