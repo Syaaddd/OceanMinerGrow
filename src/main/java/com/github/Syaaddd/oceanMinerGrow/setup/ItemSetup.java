@@ -126,5 +126,8 @@ public class ItemSetup {
 
         new SlimefunItem(group, OceanMinerItems.VOID_CRYSTAL,
             oceanMinerDrop, emptyRecipe.clone()).register(plugin);
+
+        // Register researches after all items are registered
+        ResearchSetup.register(plugin);
     }
 }
