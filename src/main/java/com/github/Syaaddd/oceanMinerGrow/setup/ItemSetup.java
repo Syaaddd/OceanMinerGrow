@@ -50,7 +50,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk1,
-            500, 5000, 1, 1, 40).register(plugin);
+            75000, 750000, 1, 1, 40).register(plugin);
 
         // MK2: [Prismarine Brick x3] / [Tridentite, MK1, Tridentite] / [Reinf Alloy, Advanced Circuit, Reinf Alloy]
         ItemStack[] recipeMk2 = {
@@ -66,7 +66,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK2,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk2,
-            2000, 20000, 2, 2, 30).register(plugin);
+            300000, 3000000, 2, 2, 30).register(plugin);
 
         // MK3: [Tidestone x3] / [Pressure Gem, MK2, Pressure Gem] / [Reinf Alloy, Electric Motor, Reinf Alloy]
         ItemStack[] recipeMk3 = {
@@ -82,7 +82,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK3,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk3,
-            8000, 80000, 3, 3, 20).register(plugin);
+            1200000, 12000000, 3, 3, 20).register(plugin);
 
         // MK4: [Abyssal Core x3] / [Void Crystal, MK3, Void Crystal] / [Reinf Alloy, Cargo Motor, Reinf Alloy]
         ItemStack[] recipeMk4 = {
@@ -98,7 +98,7 @@ public class ItemSetup {
         };
         new OceanMiner(group, OceanMinerItems.OCEAN_MINER_MK4,
             RecipeType.ENHANCED_CRAFTING_TABLE, recipeMk4,
-            32000, 320000, 5, 4, 15).register(plugin);
+            4800000, 48000000, 5, 4, 15).register(plugin);
 
         // ── Output materials – bagian material dikosongkan ───────────────────
         ItemStack[] emptyRecipe = new ItemStack[9];

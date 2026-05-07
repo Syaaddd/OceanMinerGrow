@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
@@ -20,12 +21,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,13 +34,7 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
     private static final int MAX_PLACE_Y = 44;
 
-    /*
-     * Satu static map untuk semua tier — menghindari 4 map terpisah.
-     * Key: koordinat blok dikodekan jadi long (tanpa alokasi Location).
-     * Value: world tick berikutnya ketika mesin boleh produksi.
-     * Semua tick berjalan di main thread (isSynchronized=true) → tidak perlu sync.
-     */
-    private static final Map<Long, Long> NEXT_TICK_MAP = new HashMap<>(512);
+    private static final String KEY_NEXT_TICK = "omg_next_tick";
 
     private final int energyConsumption;
     private final int energyCapacity;
@@ -59,14 +54,6 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
         this.tier = tier;
         this.tickDelay = tickDelay;
         this.outputSlots = buildOutputSlots(tier);
-    }
-
-    // Encode koordinat blok ke long — menghindari alokasi Location di hot path
-    private static long blockKey(Block block) {
-        // X: 26 bit, Z: 26 bit, Y: 12 bit — cukup untuk semua koordinat Minecraft
-        return (((long)(block.getX() & 0x3FFFFFF)) << 38)
-             | (((long)(block.getZ() & 0x3FFFFFF)) << 12)
-             | ((long)(block.getY() & 0xFFF));
     }
 
     private static int[] buildOutputSlots(int tier) {
@@ -127,6 +114,21 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
             }
         });
 
+
+        addItemHandler(new BlockBreakHandler(false, false) {
+            @Override
+            public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
+                BlockMenu menu = BlockStorage.getInventory(e.getBlock().getLocation());
+                if (menu == null) return;
+                for (int slot : outputSlots) {
+                    ItemStack stored = menu.getItemInSlot(slot);
+                    if (stored != null && stored.getType() != Material.AIR) {
+                        drops.add(stored.clone());
+                        menu.replaceExistingItem(slot, null);
+                    }
+                }
+            }
+        });
 
         addItemHandler(new BlockTicker() {
             @Override
@@ -197,22 +199,21 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
         if (!hasAdjacentWater(block)) return;
 
-        // Konsumsi energi setiap Slimefun tick agar sesuai deskripsi "J/tick".
-        // Jika energi tidak cukup, mesin berhenti total hingga diisi ulang.
+        long now = block.getWorld().getFullTime();
+        String nextTickStr = BlockStorage.getLocationInfo(loc, KEY_NEXT_TICK);
+        if (nextTickStr != null && !nextTickStr.isEmpty()) {
+            try {
+                if (now < Long.parseLong(nextTickStr)) return;
+            } catch (NumberFormatException ignored) {}
+        }
+
         int stored = getCharge(loc);
         if (stored < energyConsumption) return;
-        removeCharge(loc, energyConsumption);
-
-        // Produksi dibatasi oleh cooldown game-tick — energi tetap terkonsumsi
-        // selama menunggu, yang merupakan perilaku yang diharapkan untuk CONSUMER.
-        long key = blockKey(block);
-        long now = block.getWorld().getFullTime();
-        Long scheduled = NEXT_TICK_MAP.get(key);
-        if (scheduled != null && now < scheduled) return;
 
         if (!hasOutputSpace(menu)) return;
 
-        NEXT_TICK_MAP.put(key, now + tickDelay);
+        removeCharge(loc, energyConsumption);
+        BlockStorage.addBlockInfo(loc, KEY_NEXT_TICK, String.valueOf(now + tickDelay));
 
         ThreadLocalRandom rng = ThreadLocalRandom.current();
         int y = block.getY();

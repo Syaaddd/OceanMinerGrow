@@ -14,7 +14,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
         ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "500 J/tick",
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "75.000 J/tick",
         ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "1 item / 40 tick " + ChatColor.GRAY + "(0.5 item/detik)",
         ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "9 slot"
     );
@@ -27,7 +27,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
         ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "2.000 J/tick",
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "300.000 J/tick",
         ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "2 item / 30 tick " + ChatColor.GRAY + "(1.3 item/detik)",
         ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "18 slot"
     );
@@ -40,7 +40,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
         ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "8.000 J/tick",
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "1.200.000 J/tick",
         ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "3 item / 20 tick " + ChatColor.GRAY + "(3.0 item/detik)",
         ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "36 slot"
     );
@@ -53,7 +53,7 @@ public final class OceanMinerItems {
         ChatColor.GRAY + "Mengumpulkan material laut secara otomatis.",
         ChatColor.GRAY + "Letakkan di dalam air pada Y ≤ 44.",
         "",
-        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "32.000 J/tick",
+        ChatColor.YELLOW + "Energy: "  + ChatColor.WHITE + "4.800.000 J/tick",
         ChatColor.YELLOW + "Output: "  + ChatColor.WHITE + "5 item / 15 tick " + ChatColor.GRAY + "(6.7 item/detik)",
         ChatColor.YELLOW + "Storage: " + ChatColor.WHITE + "45 slot"
     );
