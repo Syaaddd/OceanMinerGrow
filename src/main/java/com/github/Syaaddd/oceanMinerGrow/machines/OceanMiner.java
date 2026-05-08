@@ -8,7 +8,6 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
@@ -22,7 +21,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
@@ -32,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
 
-    private static final int MAX_PLACE_Y = 44;
+    public static final int MAX_PLACE_Y = 44;
 
     private static final String KEY_NEXT_TICK = "omg_next_tick";
 
@@ -89,31 +87,6 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
                 return outputSlots;
             }
         };
-
-        addItemHandler(new BlockPlaceHandler(false) {
-            @Override
-            public void onPlayerPlace(BlockPlaceEvent e) {
-                Block placed = e.getBlockPlaced();
-                Material replacedType = e.getBlockReplacedState().getType();
-                boolean wasWater = replacedType == Material.WATER
-                    || replacedType == Material.BUBBLE_COLUMN;
-                boolean validY = placed.getY() <= MAX_PLACE_Y;
-
-                if (!wasWater || !validY) {
-                    e.setCancelled(true);
-                    e.getPlayer().sendMessage(
-                        ChatColor.RED + "[OceanMinerGrow] " +
-                        ChatColor.YELLOW + "Ocean Miner harus diletakkan di dalam air pada Y \u2264 44!"
-                    );
-                    // Paksa client revert ghost block ke kondisi asli
-                    e.getPlayer().sendBlockChange(
-                        placed.getLocation(),
-                        e.getBlockReplacedState().getBlockData()
-                    );
-                }
-            }
-        });
-
 
         addItemHandler(new BlockBreakHandler(false, false) {
             @Override
@@ -181,7 +154,7 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
             OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
             OceanMinerItems.ABYSSITE, OceanMinerItems.TRIDENTITE_SHARD,
             OceanMinerItems.TIDESTONE_FRAGMENT, OceanMinerItems.PRESSURE_GEM,
-            OceanMinerItems.ABYSSAL_CORE
+            OceanMinerItems.ABYSSAL_CORE, OceanMinerItems.VOID_CRYSTAL
         };
         return new ItemStack[]{
             OceanMinerItems.CORAL_DUST, OceanMinerItems.PEARLSTONE,
@@ -294,14 +267,16 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
                 if (roll < 60) return OceanMinerItems.PEARLSTONE.clone();
                 if (roll < 80) return OceanMinerItems.ABYSSITE.clone();
                 if (roll < 95) return OceanMinerItems.TIDESTONE_FRAGMENT.clone();
-                return null;
+                if (roll < 99) return null;
+                return OceanMinerItems.VOID_CRYSTAL.clone();
             } else if (y >= 0) {
                 if (roll < 30) return OceanMinerItems.CORAL_DUST.clone();
                 if (roll < 50) return OceanMinerItems.PEARLSTONE.clone();
                 if (roll < 70) return OceanMinerItems.ABYSSITE.clone();
                 if (roll < 85) return OceanMinerItems.TRIDENTITE_SHARD.clone();
                 if (roll < 95) return OceanMinerItems.TIDESTONE_FRAGMENT.clone();
-                return OceanMinerItems.ABYSSAL_CORE.clone();
+                if (roll < 99) return OceanMinerItems.ABYSSAL_CORE.clone();
+                return OceanMinerItems.VOID_CRYSTAL.clone();
             } else {
                 if (roll < 25) return OceanMinerItems.CORAL_DUST.clone();
                 if (roll < 40) return OceanMinerItems.PEARLSTONE.clone();
@@ -309,7 +284,8 @@ public class OceanMiner extends SlimefunItem implements EnergyNetComponent {
                 if (roll < 70) return OceanMinerItems.TRIDENTITE_SHARD.clone();
                 if (roll < 82) return OceanMinerItems.TIDESTONE_FRAGMENT.clone();
                 if (roll < 92) return OceanMinerItems.PRESSURE_GEM.clone();
-                return OceanMinerItems.ABYSSAL_CORE.clone();
+                if (roll < 98) return OceanMinerItems.ABYSSAL_CORE.clone();
+                return OceanMinerItems.VOID_CRYSTAL.clone();
             }
         } else {
             // tier 4

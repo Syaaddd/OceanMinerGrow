@@ -1,5 +1,6 @@
 package com.github.Syaaddd.oceanMinerGrow;
 
+import com.github.Syaaddd.oceanMinerGrow.listeners.OceanMinerPlacementListener;
 import com.github.Syaaddd.oceanMinerGrow.setup.ItemSetup;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,7 @@ public final class OceanMinerGrow extends JavaPlugin implements SlimefunAddon {
     public void onEnable() {
         instance = this;
         new ItemSetup(this).register();
+        getServer().getPluginManager().registerEvents(new OceanMinerPlacementListener(), this);
     }
 
     @Override
